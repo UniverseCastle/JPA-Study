@@ -1,0 +1,44 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.2'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.jpa'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA를 사용하기 위한 스타터
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // Thymeleaf 템플릿 엔진을 사용하기 위한 스타터
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect' // Thymeleaf 레이아웃 다이얼렉트
+	implementation 'org.springframework.boot:spring-boot-starter-validation' // Bean Validation API를 사용하여 데이터 유효성 검사를 쉽게 구현할 수 있도록 도와주는 스타터
+	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security를 사용하기 위한 스타터
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6' // Thymeleaf와 Spring Security를 통합하기 위한 추가 라이브러리
+	implementation 'org.commonmark:commonmark:0.21.0' // CommonMark 마크다운 파서를 제공하는 라이브러리
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc' // Spring JDBC를 사용하기 위한 스타터
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'org.junit.jupiter:junit-jupiter' // JUnit 5의 Jupiter API를 사용하여 단위 테스트를 작성할 수 있게 해주는 라이브러리
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit 플랫폼을 실행하기 위한 런처로, JUnit 테스트 기능 제공
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	compileOnly 'org.projectlombok:lombok' // Lombok은 코드 작성 시 반복적인 보일러 플레이트 코드를 줄여주는 라이브러리
+	annotationProcessor 'org.projectlombok:lombok' // Lombok에서 제공하는 애너테이션을 처리하기 위한 프로세서
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client' // MariaDB
+	//implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+	//implementation 'com.google.code.gson:gson:2.8.9'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
