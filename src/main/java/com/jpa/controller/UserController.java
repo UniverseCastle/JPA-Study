@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.jpa.dto.request.UserDeleteReqDTO;
 import com.jpa.dto.request.UserSignupReqDTO;
 import com.jpa.dto.request.UserUpdateReqDTO;
 import com.jpa.entity.SiteUser;
@@ -83,6 +84,7 @@ public class UserController {
 	public String update(Principal principal, Model model) {
 		SiteUser siteUser = this.userService.getUser(principal.getName());
 		
+		// builder 패턴으로 DB의 정보를 DTO에 set해줌
 		UserUpdateReqDTO updateReq = UserUpdateReqDTO.builder()
 				.username(siteUser.getUsername())
 				.password(siteUser.getPassword())
@@ -107,5 +109,30 @@ public class UserController {
 		this.userService.update(siteUser, updateReq, principal);
 		
 		return "redirect:/board/list";
+	}
+	
+	// 회원탈퇴
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("delete")
+	public String userDelete(UserDeleteReqDTO deleteReq, Model model) {
+		model.addAttribute("deleteReq", deleteReq);
+		return "user/delete";
+	}
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("delete")
+	public String delete(@Valid UserDeleteReqDTO deleteReq,
+						 BindingResult result, Principal principal) {
+		if (result.hasErrors()) {
+			return "user/delete";
+		}
+		SiteUser siteUser = this.userService.getUser(principal.getName());
+		
+		if (!passwordEncoder.matches(deleteReq.getPassword(), siteUser.getPassword())) {
+			result.rejectValue("password", "passwordInCorrect", "비밀번호가 맞지 않습니다.");
+			return "user/delete";
+		}else {
+			userService.delete(siteUser, principal); // 회원탈퇴 메서드
+			return "redirect:/user/logout"; // 회원탈퇴 성공한 경우 로그아웃 처리
+		}
 	}
 }

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>회원탈퇴</title>
+</head>
+<body>
+	<main>
+		<section>
+		<h1>회원 탈퇴</h1>
+		<form th:action="@{/user/delete}" method="post">
+			<table>
+				<tr>
+					<td>비밀번호 확인 : </td>
+					<td>
+						<input type="password" name="password" required	/>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input type="submit" value="탈퇴하기"	/>
+					</td>
+				</tr>
+			</table>
+		</form>
+		</section>
+	</main>
+</body>
+</html>

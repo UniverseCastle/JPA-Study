@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,26 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	
+	// 회원 이름으로 객체 불러오기
+	public SiteUser getUser(String username) {
+		Optional<SiteUser> siteUser = this.userRepository.findByUsername(username);
+		if (siteUser.isPresent()) {
+			return siteUser.get();
+		}else {
+			throw new DataNotFoundException("siteUser not found");
+		}
+	}
+	
+	// 회원 아이디로 객체 불러오기
+	public SiteUser getId(Long id) {
+		Optional<SiteUser> siteUser = this.userRepository.findById(id);
+		if (siteUser.isPresent()) {
+			return siteUser.get();
+		}else {
+			throw new DataNotFoundException("siteUser not found");
+		}
+	}
 	
 	// 회원가입
 	public SiteUser signup(UserSignupReqDTO signupReq) {
@@ -42,23 +63,6 @@ public class UserService {
 		return user;
 	}
 	
-	public SiteUser getUser(String username) {
-		Optional<SiteUser> siteUser = this.userRepository.findByUsername(username);
-		if (siteUser.isPresent()) {
-			return siteUser.get();
-		}else {
-			throw new DataNotFoundException("siteUser not found");
-		}
-	}
-	
-	public SiteUser getId(Long id) {
-		Optional<SiteUser> siteUser = this.userRepository.findById(id);
-		if (siteUser.isPresent()) {
-			return siteUser.get();
-		}else {
-			throw new DataNotFoundException("siteUser not found");
-		}
-	}
 	
 	// 정보수정
 	public void update(SiteUser siteUser, UserUpdateReqDTO updateReq,
@@ -96,6 +100,17 @@ public class UserService {
 			this.userRepository.save(siteUser);
 		}else {
 			throw new DataNotFoundException("siteUser not found");
+		}
+	}
+	
+	// 회원탈퇴
+	public void delete(SiteUser siteUser, Principal principal) {
+		Optional<SiteUser> ouser = this.userRepository.findByUsername(principal.getName());
+		if (ouser.isPresent()) {
+			siteUser = ouser.get();
+			siteUser.setDeleteYn("y");
+			
+			this.userRepository.save(siteUser);
 		}
 	}
 }
