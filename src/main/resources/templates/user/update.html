@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>정보수정</title>
+</head>
+<body>
+	<main>
+		<form th:action="@{/user/update}" th:object="${updateReq}" method="post">
+<!-- 			<div th:replace="~{form_errors :: formErrorsFragment}"> -->
+<!-- 			</div> -->
+			<section>
+				<h1>회원정보 수정</h1>
+				<table>
+					<tr>
+						<td><label>아이디 : </label></td>
+						<td>
+							<div th:text="*{username}"></div>
+							<input type="hidden" th:field="*{username}" th:value="*{username}"	/>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="password">비밀번호 : </label></td>
+						<td>
+							<input type="password" th:field="*{password}" id="password"	/>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="email">이메일 : </label></td>
+						<td>
+							<input type="email" th:field="*{email}" id="email"	/>
+						</td>
+					</tr>
+					<tr>
+						<td><label>성별 : </label></td>
+						<td>
+							<div th:text="*{gender}"></div>
+							<input type="hidden" th:field="*{gender}" th:value="*{gender}"	/>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="country">국가 : </label></td>
+						<td>
+							<select th:field="*{country}">
+								<option value="대한민국">대한민국</option>
+								<option value="일본">일본</option>
+								<option value="중국">중국</option>
+								<option value="북한">북한</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td><label>취미 : </label></td>
+						<td>
+							<label for="hobby1">공부</label><input type="checkbox" th:field="*{hobbies}" value="study" id="hobby1"	/>
+							<label for="hobby2">운동</label><input type="checkbox" th:field="*{hobbies}" value="sports" id="hobby2"	/>
+							<label for="hobby3">영화</label><input type="checkbox" th:field="*{hobbies}" value="movie" id="hobby3"	/>
+							<label for="hobby4">음악</label><input type="checkbox" th:field="*{hobbies}" value="music" id="hobby4"	/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<button type="submit">수정</button>
+						</td>
+					</tr>
+				</table>
+			</section>
+		</form>
+	</main>
+</body>
+</html>

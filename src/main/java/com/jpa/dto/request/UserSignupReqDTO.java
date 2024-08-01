@@ -11,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SignupReqDTO {
+public class UserSignupReqDTO {
 
 	@Size(min = 3, max = 25)
 	@NotEmpty(message = "사용자 이름은 필수 항목입니다.")

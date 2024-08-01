@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.jpa.dto.request.SignupReqDTO;
+import com.jpa.dto.request.UserSignupReqDTO;
+import com.jpa.dto.request.UserUpdateReqDTO;
 import com.jpa.entity.SiteUser;
 import com.jpa.service.UserService;
 
@@ -29,13 +30,13 @@ public class UserController {
 	
 	// 회원가입
 	@GetMapping("/signup")
-	public String signup(SignupReqDTO signupReq, Model model) {
+	public String signup(UserSignupReqDTO signupReq, Model model) {
 		model.addAttribute("signupReq", signupReq);
 		
 		return "user/signup";
 	}
 	@PostMapping("/signup")
-	public String signup(@Valid SignupReqDTO signupReq, BindingResult result) {
+	public String signup(@Valid UserSignupReqDTO signupReq, BindingResult result) {
 		if (result.hasErrors()) {
 			return "user/signup";
 		}
@@ -73,6 +74,38 @@ public class UserController {
 		if (siteUser.getDeleteYn().equals("y")) {
 			return "redirect:/user/logout";
 		}
+		return "redirect:/board/list";
+	}
+	
+	// 정보수정
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/update")
+	public String update(Principal principal, Model model) {
+		SiteUser siteUser = this.userService.getUser(principal.getName());
+		
+		UserUpdateReqDTO updateReq = UserUpdateReqDTO.builder()
+				.username(siteUser.getUsername())
+				.password(siteUser.getPassword())
+				.email(siteUser.getEmail())
+				.gender(siteUser.getGender())
+				.country(siteUser.getCountry())
+				.hobbies(siteUser.getHobbies())
+				.build();
+		model.addAttribute("updateReq", updateReq);
+		
+		return "user/update";
+	}
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/update")
+	public String update(@Valid UserUpdateReqDTO updateReq, BindingResult result,
+						 SiteUser siteUser, Principal principal) {
+		System.out.println("처음");
+		if (result.hasErrors()) {
+			System.out.println("중간");
+			return "user/update";
+		}
+		this.userService.update(siteUser, updateReq, principal);
+		
 		return "redirect:/board/list";
 	}
 }
