@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>비밀번호 찾기</title>
+</head>
+<body>
+	<main>
+		<form th:action="@{/user/findPw}" th:object="${findReq}" method="post">
+<!-- 			<div th:replace="~{form_errors :: formErrorsFragment}"></div> -->
+			<table>
+				<tr>
+					<td><label for="id">아이디 확인 : </label></td>
+					<td>
+						<input type="text" th:field="*{username}" id="id" required	/>
+					</td>
+				</tr>
+				<tr>
+					<td><label for="email">이메일 확인 : </label></td>
+					<td>
+						<input type="text" th:field="*{email}" id="email" required	/>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input type="submit" value="확인"	/>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</main>
+</body>
+</html>

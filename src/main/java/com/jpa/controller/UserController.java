@@ -9,10 +9,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.jpa.dto.request.UserDeleteReqDTO;
+import com.jpa.dto.request.UserFindReqDTO;
+import com.jpa.dto.request.UserPwReqDTO;
 import com.jpa.dto.request.UserSignupReqDTO;
 import com.jpa.dto.request.UserUpdateReqDTO;
 import com.jpa.entity.SiteUser;
@@ -20,6 +24,7 @@ import com.jpa.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -101,9 +106,7 @@ public class UserController {
 	@PostMapping("/update")
 	public String update(@Valid UserUpdateReqDTO updateReq, BindingResult result,
 						 SiteUser siteUser, Principal principal) {
-		System.out.println("처음");
 		if (result.hasErrors()) {
-			System.out.println("중간");
 			return "user/update";
 		}
 		this.userService.update(siteUser, updateReq, principal);
@@ -116,6 +119,7 @@ public class UserController {
 	@GetMapping("delete")
 	public String userDelete(UserDeleteReqDTO deleteReq, Model model) {
 		model.addAttribute("deleteReq", deleteReq);
+		
 		return "user/delete";
 	}
 	@PreAuthorize("isAuthenticated()")
@@ -134,5 +138,86 @@ public class UserController {
 			userService.delete(siteUser, principal); // 회원탈퇴 메서드
 			return "redirect:/user/logout"; // 회원탈퇴 성공한 경우 로그아웃 처리
 		}
+	}
+	
+	// 아이디 찾기 by email
+	@GetMapping("findId")
+	public String findId(UserFindReqDTO findReq, Model model) {
+		model.addAttribute("findReq", findReq);
+		return "user/find_id";
+	}
+	@PostMapping("findId")
+	public String findId(@Valid UserFindReqDTO findReq, BindingResult result,
+						 SiteUser siteUser, Model model) {
+		if (result.hasErrors()) {
+			return "user/find_id";
+		}
+		if (siteUser == null) {
+			result.rejectValue("siteUser", "email not found", "이메일을 찾을 수 없습니다.");
+			return "user/find_id";
+		}
+		if (findReq.getEmail() != null) {
+			siteUser = this.userService.findId(findReq.getEmail());
+			
+			model.addAttribute("username", siteUser.getUsername());
+			model.addAttribute("findReq", findReq);
+		}
+		return "user/find_id";
+	}
+	
+	// 비밀번호 찾기 by id & email
+	@GetMapping("findPw")
+	public String findPw(UserFindReqDTO findReq, Model model) {
+		model.addAttribute("findReq", findReq);
+		
+		return "user/find_pw";
+	}
+	@PostMapping("findPw")
+	public String findPw(@Valid UserFindReqDTO findReq, BindingResult result, SiteUser siteUser) {
+		if (result.hasErrors()) {
+			return "user/find_pw";
+		}
+		if (siteUser == null) {
+			result.rejectValue("siteUser", "siteUser not found");
+			return "user/find_pw";
+		}
+		if (findReq.getUsername() != null && findReq.getEmail() != null) {
+			siteUser = this.userService.getUser(findReq.getUsername());
+			if (siteUser.getEmail().equals(findReq.getEmail())) {
+			
+				return String.format("redirect:/user/updatePw/%s", siteUser.getId());
+			}
+		}
+		return "user/find_pw";
+	}
+	
+	// 새 비밀번호 설정
+	@GetMapping("updatePw/{id}")
+	public String updatePw(UserPwReqDTO pwReq, @PathVariable(name = "id") Long id, Model model) {
+		model.addAttribute("id", id);
+		model.addAttribute("pwReq", pwReq);
+		
+		return "user/update_pw";
+	}
+	@PostMapping("updatePw")
+	public String updatePw(@Valid UserPwReqDTO pwReq, BindingResult result,
+						   SiteUser siteUser, @RequestParam(name = "id") Long id) {
+		if (result.hasErrors()) {
+			return "user/update_pw";
+		}
+		if (!pwReq.getPassword1().equals(pwReq.getPassword2())) {
+			result.rejectValue("password2", "passwordInCorrect", "2개의 비밀번호가 일치하지 않습니다.");
+			
+			return "user/update_pw";
+		}
+		try {
+			userService.updatePw(pwReq, id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.reject("updateFailed", e.getMessage());
+			
+			return "user/update_pw";
+		}
+		return "redirect:/board/list";
 	}
 }

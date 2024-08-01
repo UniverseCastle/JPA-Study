@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>비밀번호 재설정</title>
+</head>
+<body>
+	<main>
+		<form th:action="@{/user/updatePw}" th:object="${pwReq}" method="post">
+			<input type="hidden" name="id" th:value="${id}"	/>
+<!-- 			<div th:replace="~{form_errors :: formErrorsFragment}"></div> -->
+			<table>
+				<tr>
+					<td><label for="password1">새 비밀번호 : </label></td>
+					<td>
+						<input type="password" th:field="*{password1}" id="password1" required	/>
+					</td>
+				</tr>
+				<tr>
+					<td><label for="password2">비밀번호 확인 : </label></td>
+					<td>
+						<input type="password" th:field="*{password2}" id="password2" required	/>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input type="submit" value="확인"	/>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</main>
+</body>
+</html>

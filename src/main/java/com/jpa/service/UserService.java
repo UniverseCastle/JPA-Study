@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.jpa.dto.request.UserPwReqDTO;
 import com.jpa.dto.request.UserSignupReqDTO;
 import com.jpa.dto.request.UserUpdateReqDTO;
 import com.jpa.entity.SiteUser;
@@ -112,5 +113,27 @@ public class UserService {
 			
 			this.userRepository.save(siteUser);
 		}
+	}
+	
+	// 아이디 찾기 by email
+	public SiteUser findId(String email) {
+		Optional<SiteUser> siteUser = this.userRepository.findByEmail(email);
+		if (siteUser.isPresent()) {
+			return siteUser.get();
+		}else {
+			throw new DataNotFoundException("siteUser not found");
+		}
+	}
+	
+	// 비밀번호 변경 (재설정)
+	public void updatePw(UserPwReqDTO pwReq, Long id) {
+		Optional<SiteUser> ouser = this.userRepository.findById(id);
+		if (ouser.isEmpty()) {
+			throw new DataNotFoundException("siteUser not found");
+		}
+		SiteUser siteUser = ouser.get();
+		siteUser.setPassword(passwordEncoder.encode(pwReq.getPassword1()));
+		
+		this.userRepository.save(siteUser);
 	}
 }
