@@ -36,4 +36,12 @@ public class BoardService {
 		
 		this.boardRepository.save(board);
 	}
+	
+	// 글 수정
+	public void update(Board board, String title, String content) {
+		board.setTitle(title);
+		board.setContent(content);
+		
+		this.boardRepository.save(board);
+	}
 }
