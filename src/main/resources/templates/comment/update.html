@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>댓글 수정</title>
+</head>
+<body>
+	<main>
+		<section>
+			<h1>댓글 수정</h1>
+			<form th:object="${updateReqDTO}" method="post">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"	/>
+				<div th:replace="~{/fragments/errorMessages :: errorFragment}"></div>
+				<div>
+					<label for="content">댓글내용</label>
+					<textarea th:field="*{content}" class="form-control" rows="10" cols="30" style="resize: none;"></textarea>
+					<button type="submit">저장하기</button>
+				</div>
+			</form>
+		</section>
+	</main>
+</body>
+</html>

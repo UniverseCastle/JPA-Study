@@ -77,6 +77,20 @@
 					</div>
 					<div th:text="${comment.createDate}"></div> <!-- 작성 일자 -->
 				</div>
+				<!-- 댓글 수정 -->
+				<div>
+					<a th:href="@{/comment/update/{id}(id=${comment.id})}" sec:authorize="isAuthenticated()"
+					   th:if="${comment.author != null and #authentication.getPrincipal().getUsername == comment.author.username}">
+					   수정
+					</a>
+				</div>
+				<!-- 댓글 삭제 -->
+				<div>
+					<a href="javascript:void(0);" sec:authorize="isAuthenticated()"
+					th:if="${comment.author != null and #authentication.getPrincipal().getUsername == comment.author.username}"
+					th:text="'삭제'"
+					th:onclick="'deleteComment(' + ${comment.id} + ');'"></a>
+				</div>
 			</div>
 			
 			<!-- 댓글 등록 -->
