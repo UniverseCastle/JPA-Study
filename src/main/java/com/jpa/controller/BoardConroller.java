@@ -62,7 +62,8 @@ public class BoardConroller {
 						 CommentAddReqDTO addReqDTO) {
 		Board board = this.boardService.getBoard(id);
 		model.addAttribute("board", board);
+		model.addAttribute("addReqDTO", addReqDTO);
 		
-		return "detail";
+		return "board/detail";
 	}
 }

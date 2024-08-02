@@ -6,7 +6,49 @@
 </head>
 <body>
 	<main>
+		<section>
+			<h1>글 제목</h1>
+			<h2 th:text="${board.title}"></h2>
+		</section>
 		
+		<section>
+			<h1>글 내용</h1>
+			<div th:text="|내용 : ${board.content}|"></div>
+			<div th:if="${board.modifyDate != null}">
+				<div>수정됨</div>
+				<div th:text="${board.modifyDate}"></div>
+			</div>
+			<div th:if="${board.author != null}" th:text="|작성자 : ${board.author.username}|"></div>
+			<div th:text="|작성일 : ${board.createDate}|"></div>
+		</section>
+		
+		<section>
+			<h1>댓글</h1>
+			<h3 th:text="|${#lists.size(board.commentList)}개의 댓글이 있습니다.|"></h3>
+			<!-- 댓글 반복 -->
+			<div th:each="comment : ${board.commentList}">
+				<div th:id="'comment_' + ${comment.id}"> <!-- 댓글 작성 후 이동시킬 영역 -->
+					<div th:text="${comment.content}"></div> <!-- 댓글 내용 -->
+					<div th:if="${comment.modifyDate != null}"> <!-- 수정 이력 -->
+						<div>수정됨</div>
+						<div th:text="${comment.modifyDate}"></div>
+					</div>
+					<div>
+						<!-- 댓글 작성자가 있다면 이름 출력 -->
+						<span th:if="${comment.author != null}" th:text="|작성자 : ${comment.author.username}|"></span>
+					</div>
+					<div th:text="${comment.createDate}"></div> <!-- 작성 일자 -->
+				</div>
+			</div>
+			
+			<!-- 댓글 등록 -->
+			<form th:action="@{|/comment/create/${board.id}|}" th:object="${addReqDTO}" method="post">
+				<div th:replace="~{/fragments/errorMessages :: errorFragment}"></div>
+				<label for="content">댓글 : </label>
+				<textarea th:field="*{content}" id="content" rows="10" cols="40" style="resize: none;"></textarea>
+				<button type="submit">댓글 등록</button>
+			</form>
+		</section>
 	</main>
 </body>
 </html>
