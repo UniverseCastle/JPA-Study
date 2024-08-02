@@ -46,4 +46,9 @@ public class CommentService {
 		
 		comeCommentRepository.save(comment);
 	}
+	
+	// 댓글 삭제
+	public void delete(Comments comment) {
+		comeCommentRepository.delete(comment);
+	}
 }

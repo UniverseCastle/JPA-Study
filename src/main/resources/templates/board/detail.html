@@ -4,29 +4,6 @@
 <head>
 <meta charset="UTF-8">
 <title>글 내용</title>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-	function deletePost(boardId) {
-		$.ajaxSetup({
-		    headers: {
-		        'X-CSRF-TOKEN': $('input[name="_csrf"]').val() // CSRF 토큰
-		    }
-		});
-		if (confirm('게시글을 정말 삭제하시겠습니까?')) {
-			$.ajax({
-				url: '/board/delete/' + boardId,
-				type: 'DELETE',
-				success: function(response) {
-					alert('게시글이 삭제되었습니다.');
-					location.href = '/board/list';
-				},
-				error: function(xhr, status, error) {
-					alert('삭제 실패: ' + xhr.responseText);
-				}
-			});
-		}
-	}
-</script>
 </head>
 <body>
 	<main>
@@ -62,34 +39,37 @@
 		
 		<section>
 			<h1>댓글</h1>
-			<h3 th:text="|${#lists.size(board.commentList)}개의 댓글이 있습니다.|"></h3>
+			<h3 id="commentCountDisplay" th:text="|${#lists.size(board.commentList)}개의 댓글이 있습니다.|"></h3>
 			<!-- 댓글 반복 -->
-			<div th:each="comment : ${board.commentList}">
-				<div th:id="'comment_' + ${comment.id}"> <!-- 댓글 작성 후 이동시킬 영역 -->
-					<div th:text="${comment.content}"></div> <!-- 댓글 내용 -->
-					<div th:if="${comment.modifyDate != null}"> <!-- 수정 이력 -->
-						<div>수정됨</div>
-						<div th:text="${comment.modifyDate}"></div>
+			<div id="commentList">
+				<div th:each="comment : ${board.commentList}">
+					<div th:id="'comment_' + ${comment.id}"> <!-- 댓글 작성 후 이동시킬 영역 -->
+						<div th:text="${comment.content}"></div> <!-- 댓글 내용 -->
+						<div th:if="${comment.modifyDate != null}"> <!-- 수정 이력 -->
+							<div>수정됨</div>
+							<div th:text="${comment.modifyDate}"></div>
+						</div>
+						<div>
+							<!-- 댓글 작성자가 있다면 이름 출력 -->
+							<span th:if="${comment.author != null}" th:text="|작성자 : ${comment.author.username}|"></span>
+						</div>
+						<div th:text="${comment.createDate}"></div> <!-- 작성 일자 -->
+						<!-- 댓글 수정 -->
+						<div>
+							<a th:href="@{/comment/update/{id}(id=${comment.id})}" sec:authorize="isAuthenticated()"
+							   th:if="${comment.author != null and #authentication.getPrincipal().getUsername == comment.author.username}">
+							   수정
+							</a>
+						</div>
+						<!-- 댓글 삭제 -->
+						<div>
+							<a href="javascript:void(0);" sec:authorize="isAuthenticated()"
+							th:if="${comment.author != null and #authentication.getPrincipal().getUsername == comment.author.username}"
+							th:text="'삭제'"
+							th:onclick="'deleteComment(' + ${comment.id} + ');'"></a>
+						</div>
+						<div th:text="--------------------------------"></div>
 					</div>
-					<div>
-						<!-- 댓글 작성자가 있다면 이름 출력 -->
-						<span th:if="${comment.author != null}" th:text="|작성자 : ${comment.author.username}|"></span>
-					</div>
-					<div th:text="${comment.createDate}"></div> <!-- 작성 일자 -->
-				</div>
-				<!-- 댓글 수정 -->
-				<div>
-					<a th:href="@{/comment/update/{id}(id=${comment.id})}" sec:authorize="isAuthenticated()"
-					   th:if="${comment.author != null and #authentication.getPrincipal().getUsername == comment.author.username}">
-					   수정
-					</a>
-				</div>
-				<!-- 댓글 삭제 -->
-				<div>
-					<a href="javascript:void(0);" sec:authorize="isAuthenticated()"
-					th:if="${comment.author != null and #authentication.getPrincipal().getUsername == comment.author.username}"
-					th:text="'삭제'"
-					th:onclick="'deleteComment(' + ${comment.id} + ');'"></a>
 				</div>
 			</div>
 			
@@ -102,5 +82,9 @@
 			</form>
 		</section>
 	</main>
+	
+	<!-- JavaScript -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="/js/board/detail.js"></script>
 </body>
 </html>
