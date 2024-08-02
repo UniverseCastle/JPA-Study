@@ -105,6 +105,7 @@ public class BoardConroller {
 	}
 	*/
 	
+	/*
 	// 게시글 삭제
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/detete/{id}")
@@ -117,4 +118,5 @@ public class BoardConroller {
 		
 		return "redirect:/board/list";
 	}
+	*/
 }

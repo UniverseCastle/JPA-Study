@@ -1,8 +1,32 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="UTF-8">
 <title>글 내용</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+	function deletePost(boardId) {
+		$.ajaxSetup({
+		    headers: {
+		        'X-CSRF-TOKEN': $('input[name="_csrf"]').val() // CSRF 토큰
+		    }
+		});
+		if (confirm('게시글을 정말 삭제하시겠습니까?')) {
+			$.ajax({
+				url: '/board/delete/' + boardId,
+				type: 'DELETE',
+				success: function(response) {
+					alert('게시글이 삭제되었습니다.');
+					location.href = '/board/list';
+				},
+				error: function(xhr, status, error) {
+					alert('삭제 실패: ' + xhr.responseText);
+				}
+			});
+		}
+	}
+</script>
 </head>
 <body>
 	<main>
@@ -20,6 +44,20 @@
 			</div>
 			<div th:if="${board.author != null}" th:text="|작성자 : ${board.author.username}|"></div>
 			<div th:text="|작성일 : ${board.createDate}|"></div>
+			<!-- 수정 -->
+			<div>
+				<a th:href="@{/board/update/{id}(id=${board.id})}" sec:authorize="isAuthenticated()"
+				   th:if="${board.author != null and #authentication.getPrincipal().getUsername == board.author.username}">
+				   수정
+				</a>
+			</div>
+			<!-- 삭제 -->
+			<div>
+				<a href="javascript:void(0);" sec:authorize="isAuthenticated()"
+				th:if="${board.author != null and #authentication.getPrincipal().getUsername == board.author.username}"
+				th:text="'삭제'"
+				th:onclick="'deletePost(' + ${board.id} + ');'"></a>
+			</div>
 		</section>
 		
 		<section>

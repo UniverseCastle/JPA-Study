@@ -47,6 +47,6 @@ public class BoardService {
 	
 	// 글 삭제
 	public void delete(Board board) {
-		this.boardRepository.save(board);
+		this.boardRepository.delete(board);
 	}
 }
