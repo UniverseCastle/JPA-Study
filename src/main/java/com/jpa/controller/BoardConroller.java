@@ -33,7 +33,7 @@ public class BoardConroller {
 	private final UserService userService;
 	
 	// 글목록
-	@GetMapping("list")
+	@GetMapping("/list")
 	public String list(Model model) {
 		
 		return "board/list";
@@ -48,7 +48,7 @@ public class BoardConroller {
 		return "board/create";
 	}
 	@PreAuthorize("isAuthenticated()")
-	@PostMapping("create")
+	@PostMapping("/create")
 	public String create(@Valid @ModelAttribute(name = "addReqDTO") BoardAddReqDTO addReqDTO, BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
 			return "board/create";
@@ -60,7 +60,7 @@ public class BoardConroller {
 	}
 	
 	// 글내용
-	@GetMapping("detail/{id}")
+	@GetMapping("/detail/{id}")
 	public String detail(Model model, @PathVariable(name = "id") Long id,
 						 CommentAddReqDTO addReqDTO) {
 		Board board = this.boardService.getBoard(id);
@@ -72,7 +72,7 @@ public class BoardConroller {
 	
 	// 게시글 수정
 	@PreAuthorize("isAuthenticated()")
-	@GetMapping("update/{id}")
+	@GetMapping("/update/{id}")
 	public String update(BoardAddReqDTO addReqDTO, @PathVariable(name = "id") Long id,
 						 Principal principal, Model model) {
 		Board board = this.boardService.getBoard(id);
@@ -86,8 +86,10 @@ public class BoardConroller {
 		
 		return "board/create";
 	}
+	
+	/* BoardRestController 에서 비동기 처리된 메서드
 	@PreAuthorize("isAuthenticated()")
-	@PostMapping("update/{id}")
+	@PostMapping("/update/{id}")
 	public String update(@Valid @ModelAttribute(name = "addReqDTO") BoardAddReqDTO addReqDTO, BindingResult bindingResult,
 						 @PathVariable(name = "id") Long id, Principal principal) {
 		if (bindingResult.hasErrors()) {
@@ -100,5 +102,13 @@ public class BoardConroller {
 		this.boardService.update(board, addReqDTO.getTitle(), addReqDTO.getContent());
 		
 		return String.format("redirect:/board/detail/%s", id);
+	}
+	*/
+	
+	// 게시글 삭제
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/detete/{id}")
+	public String delete() {
+		return "";
 	}
 }
