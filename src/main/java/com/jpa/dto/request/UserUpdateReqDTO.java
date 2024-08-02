@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,11 +21,11 @@ public class UserUpdateReqDTO {
 	private String username;
 	private String gender;
 	
-	@NotEmpty(message = "비밀번호는 필수 항목 입니다.")
+	@NotBlank(message = "비밀번호는 필수 항목 입니다.")
 	private String password;
 	
 	@Email
-	@NotEmpty(message = "이메일은 필수 항목 입니다.")
+	@NotBlank(message = "이메일은 필수 항목 입니다.")
 	private String email;
 
 	private String country;

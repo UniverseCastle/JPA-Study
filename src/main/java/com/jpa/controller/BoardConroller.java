@@ -7,10 +7,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.jpa.dto.request.BoardAddReqDTO;
+import com.jpa.dto.request.CommentAddReqDTO;
+import com.jpa.entity.Board;
 import com.jpa.entity.SiteUser;
 import com.jpa.service.BoardService;
 import com.jpa.service.UserService;
@@ -33,7 +36,7 @@ public class BoardConroller {
 		return "board/list";
 	}
 	
-	// 글쓰기
+	// 글작성
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/create")
 	public String create(BoardAddReqDTO addReqDTO, Model model) {
@@ -51,5 +54,15 @@ public class BoardConroller {
 		this.boardService.create(addReqDTO.getTitle(), addReqDTO.getContent(), siteUser);
 		
 		return "redirect:/board/list";
+	}
+	
+	// 글내용
+	@GetMapping("detail/{id}")
+	public String detail(Model model, @PathVariable(name = "id") Long id,
+						 CommentAddReqDTO addReqDTO) {
+		Board board = this.boardService.getBoard(id);
+		model.addAttribute("board", board);
+		
+		return "detail";
 	}
 }

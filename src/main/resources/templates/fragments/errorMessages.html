@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title></title>
+</head>
+<body>
+	<div th:fragment="errorFragment" class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}">
+	    <p th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
+	</div>
+</body>
+</html>

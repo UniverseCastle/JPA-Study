@@ -8,12 +8,13 @@
 	<main>
 		<section>
 		<h1>회원 탈퇴</h1>
-		<form th:action="@{/user/delete}" method="post">
+		<form th:action="@{/user/delete}" th:object="${deleteReq}" method="post">
+			<div th:replace="~{/fragments/errorMessages :: errorFragment}"></div>
 			<table>
 				<tr>
 					<td>비밀번호 확인 : </td>
 					<td>
-						<input type="password" name="password" required	/>
+						<input type="password" th:field="*{password}" required	/>
 					</td>
 				</tr>
 				<tr>

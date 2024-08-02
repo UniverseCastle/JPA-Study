@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,7 +61,7 @@ public class UserController {
 			return "user/signup";
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.reject("signupFailed", "이미 등록된 사용자 입니다.");
+			result.reject("signupFailed", e.getMessage());
 			
 			return "user/signup";
 		}
@@ -104,8 +105,8 @@ public class UserController {
 	}
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/update")
-	public String update(@Valid UserUpdateReqDTO updateReq, BindingResult result,
-						 SiteUser siteUser, Principal principal) {
+	public String update(@Valid @ModelAttribute(name = "updateReq") UserUpdateReqDTO updateReq, 
+						 BindingResult result, SiteUser siteUser, Principal principal) {
 		if (result.hasErrors()) {
 			return "user/update";
 		}
@@ -124,7 +125,7 @@ public class UserController {
 	}
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("delete")
-	public String delete(@Valid UserDeleteReqDTO deleteReq,
+	public String delete(@Valid @ModelAttribute(name = "deleteReq") UserDeleteReqDTO deleteReq,
 						 BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
 			return "user/delete";
@@ -147,20 +148,18 @@ public class UserController {
 		return "user/find_id";
 	}
 	@PostMapping("findId")
-	public String findId(@Valid UserFindReqDTO findReq, BindingResult result,
-						 SiteUser siteUser, Model model) {
+	public String findId(@Valid @ModelAttribute(name = "findReq") UserFindReqDTO findReq, BindingResult result,
+						 Model model) {
 		if (result.hasErrors()) {
 			return "user/find_id";
 		}
-		if (siteUser == null) {
-			result.rejectValue("siteUser", "email not found", "이메일을 찾을 수 없습니다.");
-			return "user/find_id";
-		}
-		if (findReq.getEmail() != null) {
-			siteUser = this.userService.findId(findReq.getEmail());
-			
-			model.addAttribute("username", siteUser.getUsername());
-			model.addAttribute("findReq", findReq);
+		try {
+			SiteUser siteUser = this.userService.findId(findReq.getEmail());
+	        model.addAttribute("username", siteUser.getUsername());
+	        model.addAttribute("findReq", findReq);
+		} catch (Exception e) {
+			result.rejectValue("email", "email not found", "이메일을 찾을 수 없습니다.");
+			return "user/find_id"; // 에러 페이지 대신 원래 페이지로 돌아감
 		}
 		return "user/find_id";
 	}
@@ -173,21 +172,23 @@ public class UserController {
 		return "user/find_pw";
 	}
 	@PostMapping("findPw")
-	public String findPw(@Valid UserFindReqDTO findReq, BindingResult result, SiteUser siteUser) {
+	public String findPw(@Valid @ModelAttribute(name = "findReq") UserFindReqDTO findReq, BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			return "user/find_pw";
 		}
-		if (siteUser == null) {
-			result.rejectValue("siteUser", "siteUser not found");
-			return "user/find_pw";
-		}
 		if (findReq.getUsername() != null && findReq.getEmail() != null) {
-			siteUser = this.userService.getUser(findReq.getUsername());
-			if (siteUser.getEmail().equals(findReq.getEmail())) {
-			
-				return String.format("redirect:/user/updatePw/%s", siteUser.getId());
+			try {
+				SiteUser siteUser = this.userService.getUser(findReq.getUsername());
+				if (siteUser.getEmail().equals(findReq.getEmail())) {
+					
+					return String.format("redirect:/user/updatePw/%s", siteUser.getId());
+				}
+			} catch (Exception e) {
+				model.addAttribute("result", result);
+				return "user/find_pw";
 			}
 		}
+		model.addAttribute("result", result);
 		return "user/find_pw";
 	}
 	
@@ -200,15 +201,15 @@ public class UserController {
 		return "user/update_pw";
 	}
 	@PostMapping("updatePw")
-	public String updatePw(@Valid UserPwReqDTO pwReq, BindingResult result,
+	public String updatePw(@Valid @ModelAttribute(name = "pwReq") UserPwReqDTO pwReq, BindingResult result,
 						   SiteUser siteUser, @RequestParam(name = "id") Long id) {
 		if (result.hasErrors()) {
-			return "user/update_pw";
+			return String.format("redirect:/user/updatePw/%s", siteUser.getId());
 		}
 		if (!pwReq.getPassword1().equals(pwReq.getPassword2())) {
 			result.rejectValue("password2", "passwordInCorrect", "2개의 비밀번호가 일치하지 않습니다.");
 			
-			return "user/update_pw";
+			return String.format("redirect:/user/updatePw/%s", siteUser.getId());
 		}
 		try {
 			userService.updatePw(pwReq, id);
@@ -216,7 +217,7 @@ public class UserController {
 			e.printStackTrace();
 			result.reject("updateFailed", e.getMessage());
 			
-			return "user/update_pw";
+			return String.format("redirect:/user/updatePw/%s", siteUser.getId());
 		}
 		return "redirect:/board/list";
 	}

@@ -9,14 +9,15 @@
 		<section>
 		<h1>아이디 찾기</h1>
 		<form th:action="@{/user/findId}" th:object="${findReq}" method="post">
+			<div th:replace="~{/fragments/errorMessages :: errorFragment}"></div>
 			<table>
 				<tr>
 					<td th:if="${findReq.email == null}"><label for="email">이메일 확인 : </label></td>
-					<td th:unless="${findReq.email == null}">회원님의 아이디는 </td>
+					<td th:unless="${username == null}">회원님의 아이디는 </td>
 					<td th:if="${findReq.email == null}">
 						<input type="email" th:field="*{email}" id="email" required />
 					</td>
-					<td th:if="${findReq.email != null}">
+					<td th:if="${username != null}">
 						<span th:text="${username}" style="color: teal;"></span><span> 입니다.</span>
 					</td>
 				</tr>

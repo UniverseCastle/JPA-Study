@@ -7,7 +7,7 @@
 <body>
 	<main>
 		<form th:action="@{/user/findPw}" th:object="${findReq}" method="post">
-<!-- 			<div th:replace="~{form_errors :: formErrorsFragment}"></div> -->
+			<div th:replace="~{/fragments/errorMessages :: errorFragment}"></div>
 			<table>
 				<tr>
 					<td><label for="id">아이디 확인 : </label></td>
@@ -29,5 +29,13 @@
 			</table>
 		</form>
 	</main>
+	<input th:if="${result}" type="hidden" id="result" th:value="${result}">
+	<script>
+		let result;
+		result = document.getElementById('result').value;
+		if (result) {
+			alert('아이디 또는 이메일을 확인해주세요.');
+		}
+	</script>
 </body>
 </html>

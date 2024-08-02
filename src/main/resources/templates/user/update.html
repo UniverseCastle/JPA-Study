@@ -7,8 +7,7 @@
 <body>
 	<main>
 		<form th:action="@{/user/update}" th:object="${updateReq}" method="post">
-<!-- 			<div th:replace="~{form_errors :: formErrorsFragment}"> -->
-<!-- 			</div> -->
+			<div th:replace="~{/fragments/errorMessages :: errorFragment}"></div>
 			<section>
 				<h1>회원정보 수정</h1>
 				<table>
