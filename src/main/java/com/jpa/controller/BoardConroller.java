@@ -84,7 +84,7 @@ public class BoardConroller {
 		
 		model.addAttribute("addReqDTO", addReqDTO);
 		
-		return "board/create";
+		return "board/update";
 	}
 	
 	/* BoardRestController 에서 비동기 처리된 메서드
@@ -108,7 +108,13 @@ public class BoardConroller {
 	// 게시글 삭제
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/detete/{id}")
-	public String delete() {
-		return "";
+	public String delete(@PathVariable(name = "id") Long id, Principal principal) {
+		Board board = this.boardService.getBoard(id);
+		if (!board.getAuthor().getUsername().equals(principal.getName())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
+		}
+		this.boardService.delete(board);
+		
+		return "redirect:/board/list";
 	}
 }

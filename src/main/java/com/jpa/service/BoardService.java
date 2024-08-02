@@ -44,4 +44,9 @@ public class BoardService {
 		
 		this.boardRepository.save(board);
 	}
+	
+	// 글 삭제
+	public void delete(Board board) {
+		this.boardRepository.save(board);
+	}
 }
