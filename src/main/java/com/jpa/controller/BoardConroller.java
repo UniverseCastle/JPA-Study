@@ -37,14 +37,14 @@ public class BoardConroller {
 	
 	// 글목록
 	@GetMapping("/list")
-	public String list(@RequestParam(value = "page", defaultValue = "0") int page,
+	public String list(@RequestParam(value = "page", defaultValue = "1") int page,
 					   @RequestParam(value = "kw", defaultValue = "") String kw, Model model) {
 		Page<Board> paging = this.boardService.getList(page, kw);
 		BoardPageResDTO pageResDTO = this.boardService.getBoardPage(paging);
 		
-		model.addAttribute("paging", paging);
+		model.addAttribute("paging", paging); // Pageable, 
 		model.addAttribute("kw", kw);
-		model.addAttribute("pageResDTO", pageResDTO);
+		model.addAttribute("pageResDTO", pageResDTO); // startPage, endPage, totalPages
 		
 		return "board/list";
 	}

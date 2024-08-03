@@ -4,20 +4,6 @@
 <head>
 <meta charset="UTF-8">
 <title>게시판</title>
-<style>
-	.disabled {
-		pointer-events: none;
-		opacity: 0.5;
-	}
-	.active {
-		font-weight: bold;
-		pointer-events: none;
-		color: purple;
-	}
-	.pages {
-		text-decoration-line: none;
-	}
-</style>
 </head>
 <body>
 	<main>
@@ -62,32 +48,35 @@
 		
 		<section>
 			<h4>페이징 처리</h4>
-				<span th:if="${pageResDTO.startPage > 10}">
-					<a th:href="@{|/board/list?page=${pageResDTO.startPage - 10}|}" th:text="'[이전]'"></a>
-				</span>
-				
-				<span th:each="i : ${#numbers.sequence(pageResDTO.startPage, pageResDTO.endPage)}">
-					<a th:if="${paging.number != i}" th:href="@{|/board/list?page=${i}|}" th:text="'['+${i}+']'"></a>
-					<span th:if="${paging.number == i}">
-						[<b style="color: darkgray;" th:text="${i}"></b>]
+				<div th:if="${!paging.isEmpty()}">
+					<span th:if="${pageResDTO.startPage > 10}">
+						<a th:href="@{|/board/list?page=${pageResDTO.startPage - 10}|}" th:text="'[이전]'"></a>
 					</span>
-				</span>
-				
-				<span th:if="${pageResDTO.endPage < pageResDTO.totalPages}">
-					<a th:href="@{|/board/list?page=${pageResDTO.startPage + 10}|}" th:text="'[다음]'"></a>
-				</span>
+					
+					<span th:each="i : ${#numbers.sequence(pageResDTO.startPage, pageResDTO.endPage)}">
+						<!-- Pageable pageRequest -1 설정함 -->
+						<a th:if="${paging.number != (i-1)}" th:href="@{|/board/list?kw=${kw}&page=${i}|}" th:text="'['+${i}+']'"></a>
+						<span th:if="${paging.number == (i-1)}">
+							[<b style="color: darkgray;" th:text="${i}"></b>]
+						</span>
+					</span>
+					
+					<span th:if="${pageResDTO.endPage < pageResDTO.totalPages}">
+						<a th:href="@{|/board/list?page=${pageResDTO.startPage + 10}|}" th:text="'[다음]'"></a>
+					</span>
+				</div>
 		</section>
 		
 		<form th:action="@{/board/list}" method="get" id="searchForm">
 			<input type="hidden" id="kw" name="kw" th:value="${kw}">
-			<input type="hidden" id="page" name="page" th:value="${paging.number}">
+			<input type="hidden" id="page" name="page"> <!-- 페이지 초기화 -->
 		</form>
 	</main>
 	<script>
 		const btn_search = document.getElementById('btn_search');
 		btn_search.addEventListener('click', function() {
 			document.getElementById('kw').value = document.getElementById('search_kw').value;
-			document.getElementById('page').value = 0;
+			document.getElementById('page').value = 1; // 키워드 입력 시 페이지 초기화
 			document.getElementById('searchForm').submit();
 		});
 	</script>

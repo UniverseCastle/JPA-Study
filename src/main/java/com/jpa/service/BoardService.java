@@ -36,7 +36,7 @@ public class BoardService {
 	// 키워드
 	private Specification<Board> search(String kw) {
 		return new Specification<Board>() {
-			private static final long SerialVersionUID = 1L;
+			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public Predicate toPredicate(Root<Board> b, CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -58,18 +58,16 @@ public class BoardService {
 	public Page<Board> getList(int page, String kw) {
 		List<Sort.Order> sorts = new ArrayList<>();
 		sorts.add(Sort.Order.desc("createDate"));
-		// page: 요청할 페이지 번호. 0부터 시작 , 10: 표시할 페이지 크기 , Sort.by(): 정렬 기준
-		Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+		// page: 번호 0으로 변환 , pageSize , Sort.by(): 정렬 기준
+		Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
 		Specification<Board> spec = search(kw);
 		
 		return this.boardRepository.findAll(spec, pageable);
 	}
 	public BoardPageResDTO getBoardPage(Page<Board> boardList) {
-//		Page<Board> boardPage = getList(page, kw);
-		
 		int pageSize = 10;
-		int currentPage = boardList.getNumber() - 1; // 현재 페이지 번호 , 인덱스 0부터 시작하기 때문에 1 빼줌
-		int totalPages = boardList.getTotalPages() - 1; // 전체 페이지 수 , ""
+		int currentPage = boardList.getNumber(); // 현재 페이지 번호
+		int totalPages = boardList.getTotalPages(); // 전체 페이지 수 
 		
 		int startPage = (currentPage / pageSize) * pageSize + 1; // 시작 페이지 계산
 		int endPage = Math.min(startPage + pageSize - 1, totalPages); // 끝 페이지 계산
