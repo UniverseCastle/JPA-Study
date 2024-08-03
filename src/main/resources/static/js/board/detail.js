@@ -40,7 +40,7 @@ function deleteComment(commentId) {
 					updateCommentCount();
 				}else {
 					// 실패 처리
-					alert('댓글 삭제 실패');
+					alert('댓글 삭제 실패' + (response.message || '알 수 없는 오류'));
 				}
 			}
 		});

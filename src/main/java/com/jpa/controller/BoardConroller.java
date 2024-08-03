@@ -2,6 +2,7 @@ package com.jpa.controller;
 
 import java.security.Principal;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -12,10 +13,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.jpa.dto.request.BoardAddReqDTO;
 import com.jpa.dto.request.CommentAddReqDTO;
+import com.jpa.dto.response.BoardPageResDTO;
 import com.jpa.entity.Board;
 import com.jpa.entity.SiteUser;
 import com.jpa.service.BoardService;
@@ -34,7 +37,14 @@ public class BoardConroller {
 	
 	// 글목록
 	@GetMapping("/list")
-	public String list(Model model) {
+	public String list(@RequestParam(value = "page", defaultValue = "0") int page,
+					   @RequestParam(value = "kw", defaultValue = "") String kw, Model model) {
+		Page<Board> paging = this.boardService.getList(page, kw);
+		BoardPageResDTO pageResDTO = this.boardService.getBoardPage(paging);
+		
+		model.addAttribute("paging", paging);
+		model.addAttribute("kw", kw);
+		model.addAttribute("pageResDTO", pageResDTO);
 		
 		return "board/list";
 	}

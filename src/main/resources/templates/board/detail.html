@@ -17,10 +17,10 @@
 			<div th:text="|내용 : ${board.content}|"></div>
 			<div th:if="${board.modifyDate != null}">
 				<div>수정됨</div>
-				<div th:text="${board.modifyDate}"></div>
+				<div th:text="|수정일 : ${#temporals.format(board.modifyDate, 'yyyy-MM-dd HH:mm')}|"></div>
 			</div>
 			<div th:if="${board.author != null}" th:text="|작성자 : ${board.author.username}|"></div>
-			<div th:text="|작성일 : ${board.createDate}|"></div>
+			<div th:text="|작성일 : ${#temporals.format(board.createDate, 'yyyy-MM-dd HH:mm')}|"></div>
 			<!-- 수정 -->
 			<div>
 				<a th:href="@{/board/update/{id}(id=${board.id})}" sec:authorize="isAuthenticated()"
@@ -47,13 +47,13 @@
 						<div th:text="${comment.content}"></div> <!-- 댓글 내용 -->
 						<div th:if="${comment.modifyDate != null}"> <!-- 수정 이력 -->
 							<div>수정됨</div>
-							<div th:text="${comment.modifyDate}"></div>
+							<div th:text="|수정일 : ${#temporals.format(comment.modifyDate, 'yyyy-MM-dd HH:mm')}|"></div>
 						</div>
 						<div>
 							<!-- 댓글 작성자가 있다면 이름 출력 -->
 							<span th:if="${comment.author != null}" th:text="|작성자 : ${comment.author.username}|"></span>
 						</div>
-						<div th:text="${comment.createDate}"></div> <!-- 작성 일자 -->
+						<div th:text="|작성일 : ${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}|"></div> <!-- 작성 일자 -->
 						<!-- 댓글 수정 -->
 						<div>
 							<a th:href="@{/comment/update/{id}(id=${comment.id})}" sec:authorize="isAuthenticated()"
